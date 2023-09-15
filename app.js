@@ -20,9 +20,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("6502c0c55134b8fe38e847b6")
+  User.findById("6503f365d9bb8e527c06b02b")
     .then((user) => {
-      req.user = user;
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch((err) => console.log(err));
@@ -35,5 +35,7 @@ app.use(errorController.get404);
 
 mongoConnect(() => {
   // console.log(client);
-  app.listen(3000);
+  app.listen(3000, () => {
+    console.log("Server is running on http://localhost:3000");
+  });
 });

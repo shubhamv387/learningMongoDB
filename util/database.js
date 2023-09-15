@@ -9,6 +9,7 @@ const mongoConnect = (cb) => {
       cb();
     })
     .catch((err) => {
+      console.log("I am getting error in mongoDB connection");
       console.log(err);
     });
 };
