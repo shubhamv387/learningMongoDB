@@ -55,14 +55,38 @@ class User {
       .find({ _id: { $in: productIds } })
       .toArray()
       .then((products) => {
-        return products.map((p) => {
-          return {
-            ...p,
-            quantity: this.cart.items.find((i) => {
+        if (productIds.length !== products.length) {
+          const updatedCart = products.map((p) => {
+            return this.cart.items.find((i) => {
               return i.productId.toString() === p._id.toString();
-            }).quantity,
-          };
-        });
+            });
+          });
+
+          return db
+            .collection("users")
+            .updateOne(
+              { _id: new ObjectId(this._id) },
+              { $set: { cart: { items: updatedCart } } }
+            )
+            .then((result) => {
+              return products.map((p) => {
+                return {
+                  ...p,
+                  quantity: this.cart.items.find((i) => {
+                    return i.productId.toString() === p._id.toString();
+                  }).quantity,
+                };
+              });
+            });
+        } else
+          return products.map((p) => {
+            return {
+              ...p,
+              quantity: this.cart.items.find((i) => {
+                return i.productId.toString() === p._id.toString();
+              }).quantity,
+            };
+          });
       })
       .catch((err) => console.log(err));
   }
