@@ -3,9 +3,9 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database").mongoConnect;
 const User = require("./models/user");
 
 const app = express();
@@ -20,9 +20,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("6503f365d9bb8e527c06b02b")
+  User.findById("6507eb61f11a98a02b35d3ac")
     .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch((err) => console.log(err));
@@ -33,9 +33,27 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  // console.log(client);
-  app.listen(3000, () => {
-    console.log("Server is running on http://localhost:3000");
-  });
-});
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then(() => {
+    User.findOne()
+      .then((user) => {
+        if (!user) {
+          const user = new User({
+            name: "Shubham",
+            email: "shubhamv387@gmail.com",
+            cart: {
+              items: [],
+            },
+          });
+          return user.save();
+        }
+      })
+      .then(() => {
+        app.listen(3000, () => {
+          console.log("Server is running on http://localhost:3000");
+        });
+      })
+      .catch((error) => console.log(error.message));
+  })
+  .catch((error) => console.log(error.message));
