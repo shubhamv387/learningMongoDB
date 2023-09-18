@@ -77,7 +77,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.where({ userId: req.user })
-    .select("-_id") // select and deselect attrebutes
+    // .select("-_id") // select and deselect attrebutes
     .then((products) => {
       res.render("admin/products", {
         prods: products,
