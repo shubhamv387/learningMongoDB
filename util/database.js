@@ -5,7 +5,7 @@ const mongoConnect = (cb) => {
   MongoClient.connect(process.env.MONGO_URL)
     .then((client) => {
       console.log("connected!");
-      _db = client.db("shop");
+      _db = client.db("shop1");
       cb();
     })
     .catch((err) => {
